@@ -1,27 +1,26 @@
-import { useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import React from "react";
+import { Text, TouchableOpacity, View } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 
-import { styles } from './styles';
+import { styles } from "./styles";
 
 export type CardProps = {
-    id: any;
-    nome: string;
-    email: string;
-    senha: string;
-    confirmaSenha: string;
-}
+  id: any;
+  nome: string;
+  email: string;
+  senha: string;
+  confirmaSenha: string;
+};
 type Props = {
   data: CardProps;
   onPress: () => void;
-}
+};
 
 export function Card({ data, onPress }: Props) {
-  const [passwordIsVisible, setPasswordIsVisible] = useState(false);
-//console.log(data.nome)
-  
+  const [passwordIsVisible, setPasswordIsVisible] = React.useState(false);
+
   function togglePasswordIsVisible() {
-    setPasswordIsVisible(prevState => !prevState);
+    setPasswordIsVisible((prevState) => !prevState);
   }
 
   return (
@@ -36,36 +35,19 @@ export function Card({ data, onPress }: Props) {
 
       <View style={styles.content}>
         <View>
-          <Text style={styles.nome}>
-            {data.nome}
-          </Text>
-          <Text style={styles.email}>
-            {data.email}
-          </Text>
+          <Text style={styles.nome}>{data.nome}</Text>
+          <Text style={styles.email}>{data.email}</Text>
 
-          {
-            passwordIsVisible
-              ?
-              <Text style={styles.password}>
-                {data.senha}
-              </Text>
-              :
-              <Text style={styles.user}>
-                {data.confirmaSenha}
-              </Text>
-          }
+          {passwordIsVisible ? (
+            <Text style={styles.password}>{data.senha}</Text>
+          ) : (
+            <Text style={styles.user}>{data.confirmaSenha}</Text>
+          )}
         </View>
       </View>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={onPress}
-      >
-        <MaterialIcons
-          name="edit"
-          size={22}
-          color="#888D97"
-        />
+      <TouchableOpacity style={styles.button} onPress={onPress}>
+        <MaterialIcons name="edit" size={22} color="#888D97" />
       </TouchableOpacity>
     </View>
   );

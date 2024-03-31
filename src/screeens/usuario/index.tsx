@@ -1,5 +1,5 @@
-import { Center, Heading, VStack } from "native-base";
 import React from "react";
+import { Center, Heading, VStack } from "native-base";
 import { Controller, useForm } from "react-hook-form";
 import { Input } from "../../components/input/Input";
 import * as yup from "yup";
@@ -75,7 +75,7 @@ export const Usuario = () => {
             render={({ field: { onChange } }) => (
               <Input
                 onChange={onChange} // send value to hook form
-                errorMessage={errors.nome?.message}
+                errorMessage={errors.nome?.message ?? ""}
               />
             )}
           />
@@ -85,7 +85,7 @@ export const Usuario = () => {
             render={({ field: { onChange } }) => (
               <Input
                 onChange={onChange} // send value to hook form
-                errorMessage={errors.nome?.message}
+                errorMessage={errors.nome?.message ?? ""}
               />
             )}
           />
@@ -95,7 +95,7 @@ export const Usuario = () => {
             render={({ field: { onChange } }) => (
               <Input
                 onChange={onChange} // send value to hook form
-                errorMessage={errors.nome?.message}
+                errorMessage={errors.nome?.message ?? ""}
               />
             )}
           />

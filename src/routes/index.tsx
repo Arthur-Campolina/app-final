@@ -36,7 +36,7 @@ export const Routes = () => {
           }}
         />
         <Tab.Screen
-          name="Home"
+          name="Usuario"
           component={Usuario}
           options={{
             tabBarIcon: ({ color }) => (
