@@ -5,6 +5,14 @@ export const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "white",
+    backgroundColor: "#F5FCFF",
+  },
+  list: {
+    flex: 1,
+    width: "100%",
+  },
+  listContent: {
+    padding: 24,
+    paddingBottom: 150,
   },
 });

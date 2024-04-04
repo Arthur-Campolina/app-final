@@ -41,7 +41,7 @@ export function Card({ data, onPress }: Props) {
           {passwordIsVisible ? (
             <Text style={styles.password}>{data.senha}</Text>
           ) : (
-            <Text style={styles.user}>{data.confirmaSenha}</Text>
+            <Text style={styles.user}>*****</Text>
           )}
         </View>
       </View>

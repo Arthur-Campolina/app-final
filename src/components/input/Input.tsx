@@ -1,15 +1,12 @@
-import React from "react";
 import {
   Input as NativeBaseInput,
   IInputProps,
   FormControl,
-  Text,
 } from "native-base";
 
 type InputProps = IInputProps & {
   errorMessage?: string | null;
 };
-
 export function Input({ errorMessage = null, isInvalid, ...res }: InputProps) {
   const invalid = !!errorMessage || isInvalid;
   return (
@@ -27,14 +24,12 @@ export function Input({ errorMessage = null, isInvalid, ...res }: InputProps) {
           borderColor: "green.500",
         }}
         _invalid={{
-          borderWidth: "2px",
-          borderColor: "pink.300",
+          borderWidth: "3px",
+          borderColor: "blueGray.100",
         }}
         {...res}
       />
-      <FormControl.ErrorMessage>
-        <Text>{errorMessage}</Text>
-      </FormControl.ErrorMessage>
+      <FormControl.ErrorMessage>{errorMessage}</FormControl.ErrorMessage>
     </FormControl>
   );
 }

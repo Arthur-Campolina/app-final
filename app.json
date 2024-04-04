@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "app-crud-form",
-    "slug": "app-crud-form",
+    "name": "app_crud_form",
+    "slug": "app_crud_form",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
