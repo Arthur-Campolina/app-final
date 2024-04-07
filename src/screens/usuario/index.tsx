@@ -11,10 +11,12 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { RootTabParamList } from "../../router";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Button } from "../../components/button/Button";
+import { useFocusEffect } from "@react-navigation/native"; // Importe o hook useFocusEffect
+import { useNavigation } from "@react-navigation/native"; // Importe o hook useNavigation
 
 type UsuarioRouteProps = BottomTabScreenProps<RootTabParamList, "Usuario">;
 
-type FormDataProps = {
+export type FormDataProps = {
   id: string;
   nome: string;
   email: string;
@@ -46,14 +48,18 @@ export const Usuario: React.FC<UsuarioRouteProps> = ({ route }) => {
     resolver: yupResolver(schemaRegister) as any,
   });
 
-  const isEditing = !!route.params?.id; 
-  const isNewUser = !isEditing;
+  const userData = route.params?.item;
+  const isEditing = !!userData;
+  const isNewUser = route.params?.isNewUser || false;
 
-  React.useEffect(() => {
+
+   React.useEffect(() => {
     if (isNewUser) {
       reset(); 
+    } else if (!isNewUser) {
+      reset(userData);
     }
-  }, [isNewUser, reset]);
+  }, [isNewUser, reset, userData, isEditing]);
 
   async function handlerRegister(data: FormDataProps) {
     const newData: FormDataProps = { ...data };
@@ -221,5 +227,4 @@ export const Usuario: React.FC<UsuarioRouteProps> = ({ route }) => {
       </KeyboardAwareScrollView>
     </Center>
   );
-  
 };

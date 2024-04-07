@@ -4,13 +4,19 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Home } from "../screens/home";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Usuario } from "../screens/usuario";
+import { CardProps } from "../components/card";
+
 
 export type RootTabParamList = {
   Home: undefined;
-  Usuario: { id?: string }; 
+  Usuario: { 
+    item: CardProps;
+    isNewUser: boolean;
+  }; 
 };
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
+
 
 const MyTheme = {
   ...DefaultTheme,
@@ -38,6 +44,7 @@ export const Routes = () => {
         <Tab.Screen
           name="Usuario"
           component={Usuario}
+          initialParams={{ item: undefined, isNewUser: true }} 
           options={{
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons
