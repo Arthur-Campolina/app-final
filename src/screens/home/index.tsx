@@ -1,56 +1,60 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View } from "react-native";
-import { styles } from "./styles";
-import { Card, CardProps } from "../../components/card";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FlatList } from "native-base";
-import { useFocusEffect } from "@react-navigation/native";
+import { useIsFocused } from "@react-navigation/native";
+import Header, { Competidor } from "../../components/header/Header";
+import { Card, CardProps } from "../../components/card";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { RootTabParamList } from "../../router";
-import Header from "../../components/header/Header";
-import { Button } from "../../components/button/Button";
 
 type HomeProps = {
   navigation: BottomTabNavigationProp<RootTabParamList, "Home" | "Usuario">;
 };
 
 export const Home: React.FC<HomeProps> = ({ navigation }) => {
-  const [data, setData] = React.useState<CardProps[]>([]);
-  useFocusEffect(
-    React.useCallback(() => {
-      handleFetchData();
-    }, [])
-  );
+  const [data, setData] = useState<CardProps[]>([]);
+  const [filteredData, setFilteredData] = useState<CardProps[]>([]);
+  const isFocused = useIsFocused();
 
-  const handleEdit = (id?: string) => {
-    console.log("ID NA HOME", id?.toString());
-    navigation.navigate("Usuario", { id: id?.toString() });
-  };
+  useEffect(() => {
+    if (isFocused) {
+      handleFetchData();
+    }
+  }, [isFocused]);
 
   async function handleFetchData() {
     try {
       const reponseData = await AsyncStorage.getItem("@crud_form:usuario");
-      const dbData = reponseData ? JSON.parse(reponseData!) : [];
+      const dbData = reponseData ? JSON.parse(reponseData) : [];
       setData(dbData);
-      return dbData;
+      setFilteredData(dbData);
     } catch (error) {
       console.error(error);
     }
   }
 
+  const handleEdit = (item: CardProps) => {
+    navigation.navigate("Usuario", { item: item, isNewUser: false });
+  };
+
+  const updateFilteredData = (text: string) => {
+    const filteredCompetidores = data.filter((competidor) =>
+      competidor.nome.toLowerCase().startsWith(text.toLowerCase())
+    );
+    setFilteredData(filteredCompetidores);
+  };
+
   return (
-    <View style={styles.container}>
-      <Header />
+    <View>
+      <Header data={data} updateFilteredData={updateFilteredData} />
       <FlatList
-        data={data}
+        data={filteredData}
         keyExtractor={(item) => item.id}
-        style={styles.list}
-        contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
-          <Card data={item} onPress={() => handleEdit(item.id)} />
+          <Card data={item} onPress={() => handleEdit(item)} />
         )}
       />
     </View>
   );
-
 };

@@ -1,7 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Image, TextInput, StyleSheet } from "react-native";
 
-const Header = () => {
+export interface Competidor {
+  nome: string;
+}
+
+interface HeaderProps {
+  data: Competidor[];
+  updateFilteredData: (text: string) => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ data, updateFilteredData }) => {
+  const [searchText, setSearchText] = useState("");
+
+  const handleSearch = (text: string) => {
+    setSearchText(text);
+    updateFilteredData(text);
+  };
+
   return (
     <View style={styles.headerContainer}>
       <Image
@@ -12,6 +28,8 @@ const Header = () => {
         style={styles.input}
         placeholder="Pesquisar competidor..."
         placeholderTextColor="white"
+        value={searchText}
+        onChangeText={handleSearch}
       />
     </View>
   );
@@ -20,7 +38,7 @@ const Header = () => {
 const styles = StyleSheet.create({
   headerContainer: {
     width: "100%",
-    height: 200, 
+    height: 200,
     position: "relative",
   },
   backgroundImage: {
@@ -31,8 +49,8 @@ const styles = StyleSheet.create({
   },
   input: {
     position: "absolute",
-    bottom: 20, 
-    left: 20, 
+    bottom: 20,
+    left: 20,
     width: "90%",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     color: "white",
