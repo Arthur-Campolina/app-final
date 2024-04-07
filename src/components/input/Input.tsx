@@ -14,7 +14,7 @@ export function Input({ errorMessage = null, isInvalid, ...res }: InputProps) {
       <NativeBaseInput
         bgColor={"gray.100"}
         fontSize="md"
-        h={20}
+        h={12}
         mb={4}
         placeholderTextColor={"gray.500"}
         isInvalid={invalid}
