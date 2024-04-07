@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Center, HStack, Heading, VStack } from "native-base";
+import { Center, Heading, VStack } from "native-base";
 import { Input } from "../../components/input/Input";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -11,8 +11,7 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { RootTabParamList } from "../../router";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Button } from "../../components/button/Button";
-import { useFocusEffect } from "@react-navigation/native"; // Importe o hook useFocusEffect
-import { useNavigation } from "@react-navigation/native"; // Importe o hook useNavigation
+import { Alert } from "react-native";
 
 type UsuarioRouteProps = BottomTabScreenProps<RootTabParamList, "Usuario">;
 
@@ -39,6 +38,13 @@ const schemaRegister = yup.object({
 });
 
 export const Usuario: React.FC<UsuarioRouteProps> = ({ route }) => {
+  const [cep, setCep] = useState("");
+  const [rua, setRua] = useState("");
+  const [cidade, setCidade] = useState("");
+  const [uf, setUf] = useState("");
+  const [bairro, setBairro] = useState("");
+  const [loading, setLoading] = useState(false);
+  
   const {
     control,
     reset,
@@ -47,6 +53,23 @@ export const Usuario: React.FC<UsuarioRouteProps> = ({ route }) => {
   } = useForm<FormDataProps>({
     resolver: yupResolver(schemaRegister) as any,
   });
+
+  const handleSearchCep = async () => {
+    try {
+      setLoading(true);
+
+      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = await response.json();
+      setRua(data.logradouro);
+      setCidade(data.localidade);
+      setUf(data.uf);
+      setBairro(data.bairro);
+    } catch (error) {
+      Alert.alert("Erro", "CEP não encontrado");
+    } finally {
+      setLoading(false); 
+    }
+  };
 
   const userData = route.params?.item;
   const isEditing = !!userData;
@@ -152,9 +175,9 @@ export const Usuario: React.FC<UsuarioRouteProps> = ({ route }) => {
             render={({ field: { onChange, value } }) => (
               <Input
                 placeholder="CEP"
-                onChangeText={onChange}
-                errorMessage={errors.cep?.message}
-                value={value}
+                value={cep}
+                onChangeText={setCep}
+                onEndEditing={handleSearchCep}
               />
             )}
           />
@@ -164,9 +187,9 @@ export const Usuario: React.FC<UsuarioRouteProps> = ({ route }) => {
             render={({ field: { onChange, value } }) => (
               <Input
                 placeholder="Rua"
-                onChangeText={onChange}
+                value={rua}
+                onChangeText={setRua}
                 errorMessage={errors.rua?.message}
-                value={value}
               />
             )}
           />
@@ -188,9 +211,9 @@ export const Usuario: React.FC<UsuarioRouteProps> = ({ route }) => {
             render={({ field: { onChange, value } }) => (
               <Input
                 placeholder="Bairro"
-                onChangeText={onChange}
+                onChangeText={setBairro}
                 errorMessage={errors.bairro?.message}
-                value={value}
+                value={bairro}
               />
             )}
           />
@@ -200,9 +223,9 @@ export const Usuario: React.FC<UsuarioRouteProps> = ({ route }) => {
             render={({ field: { onChange, value } }) => (
               <Input
                 placeholder="Cidade"
-                onChangeText={onChange}
+                onChangeText={setCidade}
                 errorMessage={errors.cidade?.message}
-                value={value}
+                value={cidade}
               />
             )}
           />
@@ -212,9 +235,9 @@ export const Usuario: React.FC<UsuarioRouteProps> = ({ route }) => {
             render={({ field: { onChange, value } }) => (
               <Input
                 placeholder="UF"
-                onChangeText={onChange}
+                onChangeText={setUf}
                 errorMessage={errors.uf?.message}
-                value={value}
+                value={uf}
               />
             )}
           />
