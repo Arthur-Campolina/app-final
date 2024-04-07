@@ -4,77 +4,68 @@ import { Center, HStack, Heading, VStack } from "native-base";
 import { Input } from "../../components/input/Input";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button } from "../../components/button/Button";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-tiny-toast";
 import uuid from "react-native-uuid";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { RootTabParamList } from "../../router";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { Button } from "../../components/button/Button";
 
 type UsuarioRouteProps = BottomTabScreenProps<RootTabParamList, "Usuario">;
 
 type FormDataProps = {
-  id: any;
+  id: string;
   nome: string;
   email: string;
   senha: string;
   confirmaSenha: string;
+  telefone: string;
+  cep: string;
+  rua: string;
+  numero: string;
+  bairro: string;
+  cidade: string;
+  uf: string;
 };
 
 const schemaRegister = yup.object({
-  nome: yup
-    .string()
-    .required("Nome é obrigatório")
-    .min(3, "Informe no minimo 3 digitos"),
-  email: yup
-    .string()
-    .required("Email é obrigatório")
-    .min(6, "Informe no minimo 6 digitos")
-    .email("E-mail informado não é valido"),
-  senha: yup
-    .string()
-    .required("Senha é obrigatório")
-    .min(3, "Informe no minimo 3 digitos"),
-  confirmaSenha: yup
-    .string()
-    .required("Confirmação de senha é obrigatório")
-    .oneOf([yup.ref("senha")], "As senha devem coindir"),
+  nome: yup.string().required("Nome é obrigatório").min(3, "Informe no mínimo 3 digitos"),
+  email: yup.string().required("Email é obrigatório").min(6, "Informe no mínimo 6 digitos").email("E-mail informado não é válido"),
+  senha: yup.string().required("Senha é obrigatório").min(3, "Informe no mínimo 3 digitos"),
+  confirmaSenha: yup.string().required("Confirmação de senha é obrigatório").oneOf([yup.ref("senha")], "As senhas devem coincidir"),
 });
 
-export const Usuario: React.FC<UsuarioRouteProps> = ({ route, navigation }) => {
-  const isEditting = !!route?.params?.id;
-  const [isLoading, setIsLoading] = React.useState(false);
-
-  React.useEffect(() => {
-    if (isEditting) {
-      console.log("ID NO USUARIO", route.params.id);
-      handlerSearch(route.params.id);
-    } else reset();
-  }, [route.params.id, isEditting]);
-
+export const Usuario: React.FC<UsuarioRouteProps> = ({ route }) => {
   const {
     control,
     reset,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<FormDataProps>({
     resolver: yupResolver(schemaRegister) as any,
   });
 
-  async function handlerRegister(data: FormDataProps) {
-    data.id = uuid.v4();
+  const isEditing = !!route.params?.id; 
+  const isNewUser = !isEditing;
 
+  React.useEffect(() => {
+    if (isNewUser) {
+      reset(); 
+    }
+  }, [isNewUser, reset]);
+
+  async function handlerRegister(data: FormDataProps) {
+    const newData: FormDataProps = { ...data };
+    if (isNewUser) {
+      newData.id = uuid.v4().toString();
+    }
     try {
       const reponseData = await AsyncStorage.getItem("@crud_form:usuario");
       const dbData = reponseData ? JSON.parse(reponseData!) : [];
-      const previewData = [...dbData, data];
+      const previewData = [...dbData, newData];
 
-      await AsyncStorage.setItem(
-        "@crud_form:usuario",
-        JSON.stringify(previewData)
-      );
+      await AsyncStorage.setItem("@crud_form:usuario", JSON.stringify(previewData));
       reset();
       Toast.showSuccess("Usuário registrado com sucesso");
     } catch (e) {
@@ -82,29 +73,10 @@ export const Usuario: React.FC<UsuarioRouteProps> = ({ route, navigation }) => {
     }
   }
 
-  async function handlerSearch(id: string) {
-    try {
-      setIsLoading(true);
-      const reponseData = await AsyncStorage.getItem("@crud_form:usuario");
-      const dbData: FormDataProps[] = reponseData
-        ? JSON.parse(reponseData!)
-        : [];
-      const foundItem = dbData.find((item) => item.id === id);
-      if (foundItem)
-        Object.entries(foundItem).forEach(([key, value]) =>
-          setValue(key as keyof FormDataProps, value)
-        );
-    } catch (e) {
-      Toast.show("Erro ao registrar usuário " + e);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-  console.log(isLoading);
   return (
-    <KeyboardAwareScrollView>
-      <VStack bgColor="gray.300" flex={1} px={5} pb={100}>
-        <Center>
+    <Center>
+      <KeyboardAwareScrollView>
+        <VStack bgColor="gray.300" flex={1} px={5} pb={50}  width="100%"  maxWidth="500px" alignSelf="center">
           <Heading my={5}>Cadastro de Usuários</Heading>
           <Controller
             control={control}
@@ -156,37 +128,98 @@ export const Usuario: React.FC<UsuarioRouteProps> = ({ route, navigation }) => {
               />
             )}
           />
-          {isEditting ? (
-            <VStack>
-              <HStack>
-                <Button
-                  rounded="md"
-                  shadow={3}
-                  title="Alterar"
-                  color="#F48B20"
-                  // onPress={handleSubmit(handlerAlterRegister)}
-                />
-              </HStack>
-              <HStack paddingTop={5}>
-                <Button
-                  rounded="md"
-                  shadow={3}
-                  title="Excluir"
-                  color="#CC0707"
-                  // onPress={() => setShowDeleteDialog(true)}
-                />
-              </HStack>
-            </VStack>
-          ) : (
-            <Button
-              title="Cadastrar"
-              color="green.700"
-              onPress={handleSubmit(handlerRegister)}
-            />
-          )}
-          has context menu
-        </Center>
-      </VStack>
-    </KeyboardAwareScrollView>
+          <Controller
+            control={control}
+            name="telefone"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Telefone"
+                onChangeText={onChange}
+                errorMessage={errors.telefone?.message}
+                value={value}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="cep"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="CEP"
+                onChangeText={onChange}
+                errorMessage={errors.cep?.message}
+                value={value}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="rua"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Rua"
+                onChangeText={onChange}
+                errorMessage={errors.rua?.message}
+                value={value}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="numero"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Número"
+                onChangeText={onChange}
+                errorMessage={errors.numero?.message}
+                value={value}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="bairro"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Bairro"
+                onChangeText={onChange}
+                errorMessage={errors.bairro?.message}
+                value={value}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="cidade"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Cidade"
+                onChangeText={onChange}
+                errorMessage={errors.cidade?.message}
+                value={value}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="uf"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="UF"
+                onChangeText={onChange}
+                errorMessage={errors.uf?.message}
+                value={value}
+              />
+            )}
+          />
+          <Button
+            title={isNewUser ? "Cadastrar" : "Salvar Alterações"}
+            color="green.700"
+            onPress={handleSubmit(handlerRegister)}
+          />
+        </VStack>
+      </KeyboardAwareScrollView>
+    </Center>
   );
+  
 };
