@@ -7,7 +7,7 @@ import { Usuario } from "../screens/usuario";
 
 export type RootTabParamList = {
   Home: undefined;
-  Usuario: { id: string };
+  Usuario: { id?: string }; 
 };
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
@@ -32,15 +32,10 @@ export const Routes = () => {
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons name="home" color={color} size={26} />
             ),
-            title: "Lista de Usuário",
+            title: "Competidores",
           }}
         />
         <Tab.Screen
-          listeners={({ navigation }) => ({
-            focus: () => {
-              navigation.setParams({ id: undefined });
-            },
-          })}
           name="Usuario"
           component={Usuario}
           options={{

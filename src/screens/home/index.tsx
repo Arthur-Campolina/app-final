@@ -7,6 +7,8 @@ import { FlatList } from "native-base";
 import { useFocusEffect } from "@react-navigation/native";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { RootTabParamList } from "../../router";
+import Header from "../../components/header/Header";
+import { Button } from "../../components/button/Button";
 
 type HomeProps = {
   navigation: BottomTabNavigationProp<RootTabParamList, "Home" | "Usuario">;
@@ -20,9 +22,9 @@ export const Home: React.FC<HomeProps> = ({ navigation }) => {
     }, [])
   );
 
-  const handleEdit = (id: string) => {
-    console.log("ID NA HOME", id.toString());
-    navigation.navigate("Usuario", { id: id });
+  const handleEdit = (id?: string) => {
+    console.log("ID NA HOME", id?.toString());
+    navigation.navigate("Usuario", { id: id?.toString() });
   };
 
   async function handleFetchData() {
@@ -38,6 +40,7 @@ export const Home: React.FC<HomeProps> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <Header />
       <FlatList
         data={data}
         keyExtractor={(item) => item.id}
@@ -49,4 +52,5 @@ export const Home: React.FC<HomeProps> = ({ navigation }) => {
       />
     </View>
   );
+
 };

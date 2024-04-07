@@ -5,7 +5,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { styles } from "./styles";
 
 export type CardProps = {
-  id: any;
+  id?: any;
   nome: string;
   email: string;
   senha: string;
