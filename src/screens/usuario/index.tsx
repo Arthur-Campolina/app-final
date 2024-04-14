@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Center, Heading, VStack } from "native-base";
+import { Box, Center, HStack, Heading, IconButton, VStack, View  } from "native-base";
 import { Input } from "../../components/input/Input";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -11,7 +11,10 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { RootTabParamList } from "../../router";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Button } from "../../components/button/Button";
-import { Alert } from "react-native";
+import { Alert} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { CepData, fetchCep } from "../../services/CepService";
+
 
 type UsuarioRouteProps = BottomTabScreenProps<RootTabParamList, "Usuario">;
 
@@ -57,13 +60,17 @@ export const Usuario: React.FC<UsuarioRouteProps> = ({ route }) => {
   const handleSearchCep = async () => {
     try {
       setLoading(true);
+      const cepData: CepData | null = await fetchCep(cep);
 
-      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-      const data = await response.json();
-      setRua(data.logradouro);
-      setCidade(data.localidade);
-      setUf(data.uf);
-      setBairro(data.bairro);
+      if(cepData) {
+        setRua(cepData.rua);
+        setCidade(cepData.cidade);
+        setUf(cepData.uf);
+        setBairro(cepData.bairro);
+      }
+      else {
+        Alert.alert("Erro", "CEP não encontrado");
+      }
     } catch (error) {
       Alert.alert("Erro", "CEP não encontrado");
     } finally {
@@ -74,7 +81,6 @@ export const Usuario: React.FC<UsuarioRouteProps> = ({ route }) => {
   const userData = route.params?.item;
   const isEditing = !!userData;
   const isNewUser = route.params?.isNewUser || false;
-
 
    React.useEffect(() => {
     if (isNewUser) {
@@ -104,150 +110,161 @@ export const Usuario: React.FC<UsuarioRouteProps> = ({ route }) => {
 
   return (
     <Center>
-      <KeyboardAwareScrollView>
-        <VStack bgColor="gray.300" flex={1} px={5} pb={50}  width="100%"  maxWidth="500px" alignSelf="center">
-          <Heading my={5}>Cadastro de Usuários</Heading>
-          <Controller
-            control={control}
-            name="nome"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                placeholder="Nome"
-                onChangeText={onChange}
-                errorMessage={errors.nome?.message}
-                value={value}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                placeholder="E-mail"
-                onChangeText={onChange}
-                errorMessage={errors.email?.message}
-                value={value}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="senha"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                placeholder="Senha"
-                onChangeText={onChange}
-                secureTextEntry
-                errorMessage={errors.senha?.message}
-                value={value}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="confirmaSenha"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                placeholder="Confirma Senha"
-                onChangeText={onChange}
-                secureTextEntry
-                errorMessage={errors.confirmaSenha?.message}
-                value={value}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="telefone"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                placeholder="Telefone"
-                onChangeText={onChange}
-                errorMessage={errors.telefone?.message}
-                value={value}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="cep"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                placeholder="CEP"
-                value={cep}
-                onChangeText={setCep}
-                onEndEditing={handleSearchCep}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="rua"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                placeholder="Rua"
-                value={rua}
-                onChangeText={setRua}
-                errorMessage={errors.rua?.message}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="numero"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                placeholder="Número"
-                onChangeText={onChange}
-                errorMessage={errors.numero?.message}
-                value={value}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="bairro"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                placeholder="Bairro"
-                onChangeText={setBairro}
-                errorMessage={errors.bairro?.message}
-                value={bairro}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="cidade"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                placeholder="Cidade"
-                onChangeText={setCidade}
-                errorMessage={errors.cidade?.message}
-                value={cidade}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="uf"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                placeholder="UF"
-                onChangeText={setUf}
-                errorMessage={errors.uf?.message}
-                value={uf}
-              />
-            )}
-          />
-          <Button
-            title={isNewUser ? "Cadastrar" : "Salvar Alterações"}
-            color="green.700"
-            onPress={handleSubmit(handlerRegister)}
-          />
-        </VStack>
-      </KeyboardAwareScrollView>
+      <View width="100%">
+        <KeyboardAwareScrollView>
+          <VStack bgColor="gray.300" flex={1} px={5} pb={50}  width="100%"  maxWidth="500px" alignSelf="center">
+            <Heading my={5}>Cadastro de Usuários</Heading>
+            <Controller
+              control={control}
+              name="nome"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="Nome"
+                  onChangeText={onChange}
+                  errorMessage={errors.nome?.message}
+                  value={value}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="E-mail"
+                  onChangeText={onChange}
+                  errorMessage={errors.email?.message}
+                  value={value}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="senha"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="Senha"
+                  onChangeText={onChange}
+                  secureTextEntry
+                  errorMessage={errors.senha?.message}
+                  value={value}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="confirmaSenha"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="Confirma Senha"
+                  onChangeText={onChange}
+                  secureTextEntry
+                  errorMessage={errors.confirmaSenha?.message}
+                  value={value}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="telefone"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="Telefone"
+                  onChangeText={onChange}
+                  errorMessage={errors.telefone?.message}
+                  value={value}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="cep"
+              render={({ field: { onChange, value } }) => (
+                <HStack width="100%" alignItems="center">
+                  <Input
+                    placeholder="CEP"
+                    value={cep}
+                    onChangeText={setCep}
+                    width="90%"
+                  />
+                  <Box marginLeft={-30} height={20}>
+                    <IconButton
+                      icon={<Ionicons name="search" size={24} color="black" />}
+                      onPress={handleSearchCep}
+                      variant="unstyled"
+                    />
+                  </Box>
+                </HStack>
+              )}
+            />
+            <Controller
+              control={control}
+              name="rua"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="Rua"
+                  value={rua}
+                  onChangeText={setRua}
+                  errorMessage={errors.rua?.message}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="numero"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="Número"
+                  onChangeText={onChange}
+                  errorMessage={errors.numero?.message}
+                  value={value}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="bairro"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="Bairro"
+                  onChangeText={setBairro}
+                  errorMessage={errors.bairro?.message}
+                  value={bairro}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="cidade"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="Cidade"
+                  onChangeText={setCidade}
+                  errorMessage={errors.cidade?.message}
+                  value={cidade}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="uf"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="UF"
+                  onChangeText={setUf}
+                  errorMessage={errors.uf?.message}
+                  value={uf}
+                />
+              )}
+            />
+            <Button
+              title={isNewUser ? "Cadastrar" : "Salvar Alterações"}
+              color="green.700"
+              onPress={handleSubmit(handlerRegister)}
+            />
+          </VStack>
+        </KeyboardAwareScrollView>
+      </View>
     </Center>
   );
 };
