@@ -52,7 +52,7 @@ export const Home: React.FC<HomeProps> = ({ navigation }) => {
         data={filteredData}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <Card data={item} onPress={() => handleEdit(item)} />
+          <Card key={item.id} data={item} onPress={() => handleEdit(item)} />
         )}
       />
     </View>

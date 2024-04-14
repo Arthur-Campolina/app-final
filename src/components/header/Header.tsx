@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { View, Image, TextInput, StyleSheet } from "react-native";
+import { View, Image, TextInput } from "react-native";
+import { styles } from "./styles";
 
 export interface Competidor {
   nome: string;
@@ -34,29 +35,5 @@ const Header: React.FC<HeaderProps> = ({ data, updateFilteredData }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  headerContainer: {
-    width: "100%",
-    height: 200,
-    position: "relative",
-  },
-  backgroundImage: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
-    position: "absolute",
-  },
-  input: {
-    position: "absolute",
-    bottom: 20,
-    left: 20,
-    width: "90%",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    color: "white",
-    padding: 10,
-    borderRadius: 10,
-  },
-});
 
 export default Header;
