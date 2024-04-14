@@ -3,7 +3,7 @@ import { View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FlatList } from "native-base";
 import { useIsFocused } from "@react-navigation/native";
-import Header, { Competidor } from "../../components/header/Header";
+import Header from "../../components/header/Header";
 import { Card, CardProps } from "../../components/card";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { RootTabParamList } from "../../router";

@@ -17,22 +17,10 @@ type Props = {
 };
 
 export function Card({ data, onPress }: Props) {
-  const [passwordIsVisible, setPasswordIsVisible] = React.useState(false);
-
-  function togglePasswordIsVisible() {
-    setPasswordIsVisible((prevState) => !prevState);
-  }
+  const [passwordIsVisible] = React.useState(false);
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={togglePasswordIsVisible}>
-        <MaterialIcons
-          name={passwordIsVisible ? "visibility" : "visibility-off"}
-          size={22}
-          color="#888D97"
-        />
-      </TouchableOpacity>
-
       <View style={styles.content}>
         <View>
           <Text style={styles.nome}>{data.nome}</Text>
